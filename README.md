@@ -1,2 +1,2 @@
 # IndicoAbstractWeb
-Web version of IndicoAbstract generator
+Web version of IndicoAbstract generator (Django)
