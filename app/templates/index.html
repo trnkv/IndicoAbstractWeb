@@ -1,0 +1,46 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<form onsubmit="return checkFile();" action="send_file/" method="post" name="uploader" enctype="multipart/form-data">
+	{% csrf_token %}
+    <div class="input-group mb-3">
+        <input id="file" type="file" class="form-control" placeholder="Upload an XML Indico file" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <input class="btn btn-outline-secondary" type="submit" value="Generate book">
+        </div>
+    </div>
+</form>
+
+<script>
+    function checkFile(){
+        alert($("#file").val());
+
+        var file = document.getElementById("file").files[0],
+        ext = "не определилось",
+        parts = file.name.split('.');
+
+        if (parts.length > 1) ext = parts.pop();
+        if (ext != "xml") alert("Not an XML!");
+    }
+
+    $("form[name='uploader']").submit(function(e) {
+        var formData = new FormData($(this)[0]);
+         $.ajax({
+            url: 'file.php',
+            type: "POST",
+            data: formData,
+            async: false,
+            success: function (msg) {
+                alert(msg);
+            },
+            error: function(msg) {
+                alert('Ошибка!');
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    }
+</script>
+
+{% endblock %}
