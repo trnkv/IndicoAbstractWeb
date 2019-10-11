@@ -34,16 +34,17 @@ class Person:
 def create_dict_standarts(csv_file):
     """Creates a dictionary from CSV file."""
     standarts = {}
-    with open(csv_file, encoding='utf-8') as f_obj:
-        reader = csv.DictReader(f_obj, delimiter=':')
-        for line in reader:
-            key = line["old_affiliation"]
-            value = line["new_affiliation"]
-            standarts[key] = value
+
+    #with open(csv_file, encoding='utf-8') as f_obj:
+    reader = csv.DictReader(csv_file, delimiter=':')
+    for line in reader:
+        key = line["old_affiliation"]
+        value = line["new_affiliation"]
+        standarts[key] = value
     return standarts
 
 
-def parse_abstracts_xml(abstracts_xmlfilename, csv_file):
+def parse_abstracts_xml(abstracts_xmlfilename, abstracts_xmlfilename_copy, csv_file):
     """ Method for getting structured list containing all the abstracts from XML.
     Every abstract in the list is an object of Abstract class.
     It contains 4 main components:
@@ -54,7 +55,7 @@ def parse_abstracts_xml(abstracts_xmlfilename, csv_file):
     """
     tree_abstracts = ET.parse(abstracts_xmlfilename)
     root_abstracts = tree_abstracts.getroot()
-    doc_abstracts = LXML_ET.parse(abstracts_xmlfilename)
+    doc_abstracts = LXML_ET.parse(abstracts_xmlfilename_copy)
     count_abstracts = doc_abstracts.xpath('count(//abstract)')
 
     abstract_id = 0
@@ -67,6 +68,7 @@ def parse_abstracts_xml(abstracts_xmlfilename, csv_file):
     unknown_affiliations = []
 
     affiliation_standarts = create_dict_standarts(csv_file)
+    
 
     print("1. Parsing all abstracts from XML")
     for i in range(1, int(count_abstracts) + 1):

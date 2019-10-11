@@ -82,7 +82,7 @@ def generate_book(conference_obj, list_abstracts, doctpl_filename, finaldocument
                'desc_ru': conference_obj.desc_ru}
     doc = DocxTemplate(doctpl_filename)
     doc.render(context)
-    tmp_doc = 'static doc_results/generated_doc_tmp.docx'
+    tmp_doc = 'generated_doc_tmp.docx'
     doc.save(tmp_doc)
 
     document = Document(tmp_doc)
