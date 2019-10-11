@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Conference>
+    <NameEn>Distributed Computing and Grid-technologies in Science and Education</NameEn>
+    <NameRu>Распределенные вычисления и ГРИД-технологии в науке и образовании</NameRu>
+    <AdditionalInfoEn>(GRID 2018)</AdditionalInfoEn>
+    <AdditionalInfoRu>(ГРИД 2018)</AdditionalInfoRu>
+    <Number>8</Number>
+    <Year>2018</Year>
+    <DateEn>10-14 September</DateEn>
+    <DateRu>10-14 сентября</DateRu>
+    <DescriptionEn>The book contains abstracts of the reports submitted to the 8th International Conference “Distributed Computing and Grid-Technologies in Science and Education” (GRID 2018), which is held every two years by the JINR Laboratory of information technologies. 
+The main purpose of the Conferenceis to discuss the current Grid operation and the future role of the distributed and cloud computing, HPC, BigData etc. in Russia and worldwide. The Conference provides a platform for discussing fresh results and for establishing contacts for closer cooperation in future.
+The submitted abstracts are described the development of the global grid-infrastructures and such thriving technologies of intensive data processing as distributed, heterogeneous, cloud computing, BigData, etc. Full texts of the reports approved by the GRID2018 Advisory Committee will be published separately.</DescriptionEn>
+    <DescriptionRu>В сборник включены аннотации докладов, представленных на 8-ю международную конференцию «Распределенные вычисления и Грид-технологии в науке и образовании» (GRID 2018), которая проводится раз в два года Лабораторией информационных технологий ОИЯИ. 
+Основной целью конференции является обсуждение текущего состояния и будущего развития распределенных вычислений, грид - и облачных технологий, высокопроизводительных вычислений, технологий BigData в России и во всем мире. 
+Представленные аннотации описываются развитие глобальной Грид-инфраструктур и бурно развивающиеся технологии интенсивной обработки данных, такие как распределенные, гетерогенные вычисления, облачные вычисления, BigData т.д. Полные тексты докладов, отобранных программным комитетом, будут опубликованы отдельно.</DescriptionRu>
+</Conference>
