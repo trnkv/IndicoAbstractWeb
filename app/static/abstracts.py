@@ -44,7 +44,7 @@ def create_dict_standarts(csv_file):
     return standarts
 
 
-def parse_abstracts_xml(abstracts_xmlfilename, abstracts_xmlfilename_copy, csv_file):
+def parse_abstracts_xml(abstracts_xmlfilename, abstracts_xmlfilename_copy, csv_file, status_string):
     """ Method for getting structured list containing all the abstracts from XML.
     Every abstract in the list is an object of Abstract class.
     It contains 4 main components:
@@ -70,7 +70,7 @@ def parse_abstracts_xml(abstracts_xmlfilename, abstracts_xmlfilename_copy, csv_f
     affiliation_standarts = create_dict_standarts(csv_file)
     
 
-    print("1. Parsing all abstracts from XML")
+    status_string.append({"first":"Parsed all abstracts from XML"})
     for i in range(1, int(count_abstracts) + 1):
         for child in root_abstracts[i]:
             if child.tag == "Id":
@@ -118,12 +118,13 @@ def parse_abstracts_xml(abstracts_xmlfilename, abstracts_xmlfilename_copy, csv_f
 
     # Print unknown affiliations
     unknown_affiliations = list(set(unknown_affiliations))
-    print("2. The following affiliations are unknown. Please add them to CSV file with standards.")
+    status_string.append({"second":"The following affiliations are unknown. Please add them to CSV file with standards."})
+    status_string.append({"second_items":[]})
     for affiliation in unknown_affiliations:
-        print(affiliation)
-    print("=======================================================")
+        status_string[2]["second_items"].append(affiliation)
+    #status_string.append("=======================================================")
 
-    return abstracts_list
+    return abstracts_list, status_string
 
 def get_language_of_string(input_string):
     # Threshold to determine language
@@ -161,9 +162,9 @@ def get_language_of_string(input_string):
 
     return "MIXED"
 
-def check_abstracts_consistency(abstracts):
+def check_abstracts_consistency(abstracts, status_string):
+    j = 0
     for abstract in abstracts:
-
         # Check language consistency
         languages = {}
         languages['Title'] = get_language_of_string(abstract.title)
@@ -172,25 +173,30 @@ def check_abstracts_consistency(abstracts):
             languages['Author' + str(i) + "_Name"] = get_language_of_string(abstract.authors[i].first_name + abstract.authors[i].family_name)
             languages['Author' + str(i) + "_Affiliation"] = get_language_of_string(abstract.authors[i].affiliation)
 
+
         languages_set = set(languages.values())
         if 'NONE' in languages_set:
             languages_set.remove('NONE')
         if len(languages_set) != 1:
-            print("More than one language is used in abstract with Id: " + str(abstract.abstract_id))
-            print("Email to contact Speaker: ", [author.email for author in abstract.authors if author.is_speaker], "\n",
-                "Speaker's name: ", [author.first_name + " " + author.family_name for author in abstract.authors if author.is_speaker])
-            from pprint import pprint as pp
-            pp(languages)
-            print('_______________________________________________________')
-    print("=======================================================")
+            status_string[3]["mores"].append([])
+            status_string[3]["mores"][j].append("More than one language is used in abstract with Id: " + str(abstract.abstract_id) + "\r\n")
+            status_string[3]["mores"][j].append("Email to contact Speaker: " + str([author.email for author in abstract.authors if author.is_speaker]))
+            status_string[3]["mores"][j].append("Speaker's name: " + str([author.first_name + " " + author.family_name for author in abstract.authors if author.is_speaker]))
+            status_string[3]["mores"][j].append(languages)
+            j += 1
 
-def check_abstract_count_words(abstracts):
+            #status_string.append('_______________________________________________________')
+    #status_string.append('=======================================================')
+    return  status_string
+
+def check_abstract_count_words(abstracts, status_string):
     for abstract in abstracts:
 
         # Check count of symbols in abstract's content
         words = len(set(abstract.content.split()))
         if words < 100:
-            print('WARNING: too few words in content of abstract with Id= ', str(abstract.abstract_id), ': ', words, ' words')
+            status_string[4]["warnings"].append('WARNING: too few words in content of abstract with Id= ' + str(abstract.abstract_id) + ': ' + str(words) + ' words')
         if words > 360:
-            print('WARNING: too many words in content of abstract with Id= ', str(abstract.abstract_id), ': ', words, ' words')
+            status_string[4]["warnings"].append('WARNING: too many words in content of abstract with Id= ' + str(abstract.abstract_id) + ': ' + str(words) + ' words')
+        return status_string
 

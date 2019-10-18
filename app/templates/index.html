@@ -14,10 +14,20 @@
     </div>
 </form>
 
+<img id="img" src="https://www.mrplan.es/experiencias/images/loading_23.gif">
+
 <script>
+    $('.btn').on('click', function() {
+        $('#img').css("display", "block");
+    })
 </script>
 
 <style type="text/css">
+    img {
+        height: 100px;
+        width: 180px;
+        display: none;
+    }
 </style>
 
 {% endblock %}

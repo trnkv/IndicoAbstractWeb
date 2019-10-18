@@ -25,48 +25,52 @@ def save_copy_file(object_file, name):
 
 def upload_file(request):
     if request.method == 'POST':
-        try:
-            files = request.FILES
-            # сохраняем копии загруженных пользователем файлов на наш сервер для дальнейшей работы с ними
-            save_copy_file(files['conference'], 'conference.xml')
-            save_copy_file(files['abstracts'], 'abstracts.xml')
-            save_copy_file(files['template'], 'tpl.docx')
-            save_copy_file(files['csv'], 'matches.csv')
+        #try:
+        files = request.FILES
+        # сохраняем копии загруженных пользователем файлов на наш сервер для дальнейшей работы с ними
+        save_copy_file(files['conference'], 'conference.xml')
+        save_copy_file(files['abstracts'], 'abstracts.xml')
+        save_copy_file(files['template'], 'tpl.docx')
+        save_copy_file(files['csv'], 'matches.csv')
 
-            # открываем копию файла с сервера
-            conference_file = default_storage.open('conference.xml', 'r')
-            # отдаем эту копию функции "parse_conference_xml"
-            conference = parse_conference_xml(conference_file)
-            # закрываем файл
-            conference_file.close()
-            
-            abstracts_file = default_storage.open('abstracts.xml', 'r')
-            abstracts_file_copy = default_storage.open('abstracts.xml', 'r')
-            matches_file = default_storage.open('matches.csv', 'r')
-            abstracts = parse_abstracts_xml(abstracts_file, abstracts_file_copy, matches_file)
-            abstracts_file.close()
-            abstracts_file_copy.close()
-            matches_file.close()
+        # открываем копию файла с сервера
+        conference_file = default_storage.open('conference.xml', 'r')
+        # отдаем эту копию функции "parse_conference_xml"
+        conference = parse_conference_xml(conference_file)
+        # закрываем файл
+        conference_file.close()
 
-            check_abstracts_consistency(abstracts)
-            check_abstract_count_words(abstracts)
+        abstracts_file = default_storage.open('abstracts.xml', 'r')
+        abstracts_file_copy = default_storage.open('abstracts.xml', 'r')
+        matches_file = default_storage.open('matches.csv', 'r')
+        status_string = []
+        abstracts, status_string = parse_abstracts_xml(abstracts_file, abstracts_file_copy, matches_file, status_string)
+        abstracts_file.close()
+        abstracts_file_copy.close()
+        matches_file.close()
 
-            template_file = default_storage.open('tpl.docx', 'r')
+        status_string.append({"mores":[]})
+        status_string = check_abstracts_consistency(abstracts, status_string)
+        status_string.append({"warnings": []})
+        status_string = check_abstract_count_words(abstracts, status_string)
 
-            generate_book(conference, abstracts, str(template_file))
+        template_file = default_storage.open('tpl.docx', 'r')
 
-            template_file.close()
+        generate_book(conference, abstracts, str(template_file))
 
-            # удаляем все временные файлы  с сервера для экономии места
-            default_storage.delete('conference.xml')
-            default_storage.delete('abstracts.xml')
-            default_storage.delete('tpl.docx')
-            default_storage.delete('matches.csv')
-            default_storage.delete('generated_doc_tmp.docx')
+        template_file.close()
 
-            return render(request, 'uploaded.html', {'book':default_storage.open('book_of_abstracts.docx', 'r')})
-        except:
-            return render(request, 'error.html', {'error':"Что-то пошло не так"})
+        # удаляем все временные файлы  с сервера для экономии места
+        default_storage.delete('conference.xml')
+        default_storage.delete('abstracts.xml')
+        default_storage.delete('tpl.docx')
+        default_storage.delete('matches.csv')
+        default_storage.delete('generated_doc_tmp.docx')
+
+        return render(request, 'uploaded.html', {'status':status_string,'book':default_storage.open('book_of_abstracts.docx', 'r')})
+        #except:
+            #return render(request, 'error.html', {'error':"Something gone wrong. You may have mistaken the files."})
+            #return JsonResponse({'res':""})
         
         
         # handle_files(files)
@@ -97,6 +101,7 @@ def download_file(request):
     
     response = HttpResponse(contents, content_type='application/msword')
     response['Content-Disposition'] = 'attachment; filename=book_of_abstracts.docx'
+    default_storage.delete('book_of_abstracts.docx')
     return response
 
 

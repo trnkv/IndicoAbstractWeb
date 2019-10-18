@@ -2,6 +2,54 @@
 
 {% block content %}
 
+{% for d in status %}
+    {% for key, values in d.items %}
+        {% if key == "first" %}
+            <p>{{ values }}</p>
+        {% endif %}
+        {% if key == "second" %}
+            <p>{{ values }}</p>
+        {% endif %}
+        {% if key == "second_items" %}
+            <div class="card">
+                <div class="card-body">
+                    <ul>
+                        {% for v in values %}
+                            <li>{{ v }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+        {% if key == "mores" %}
+            {% for l in values %}
+                <div class="card">
+                    <div class="card-body">
+                        {% for item in l %}
+                            <p>{{ item }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if key == "warnings" %}
+            {% for v in values %}
+                <div class="card">
+                    <div class="card-body">
+                        <p>{{ v }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+
 <a href="/download_file/?file_name={{book}}">Скачать книгу</a>
+
+<style type="text/css">
+    p {
+        margin: 0;
+    }
+</style>
 
 {% endblock %}
