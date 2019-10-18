@@ -9,6 +9,8 @@ from docxtpl import DocxTemplate
 from docx import Document
 from .arabic_roman import arabic_roman
 
+from django.core.files.storage import default_storage
+
 
 def get_list_of_tracks(list_abstracts):
     """Creates a list of all Tracks, removes duplicates."""
@@ -41,7 +43,7 @@ def by_familyname_key2(abstract):
     return [author.family_name.capitalize() for author in abstract.authors]
 
 
-def generate_book(conference_obj, list_abstracts, doctpl_filename, finaldocument_filename):
+def generate_book(conference_obj, list_abstracts, doctpl_filename):
     """The main function for generation of the book.
             Creates the final generated document.
             Includes the following steps:
@@ -65,7 +67,7 @@ def generate_book(conference_obj, list_abstracts, doctpl_filename, finaldocument
             conferenceinfo_xmlfilename - input path of XML file about information of the conference.
             abstracts_xmlfilename - input path of XML file about information of the abstracts.
             doctpl_filename - input path of DOCX template.
-            finaldocument_filename - input path of DOCX generated document.
+            findoc - path of DOCX generated document.
             """
     context = {'title_name_en': conference_obj.name_en.upper(),
                'title_name_ru': conference_obj.name_ru.upper(),
@@ -80,12 +82,14 @@ def generate_book(conference_obj, list_abstracts, doctpl_filename, finaldocument
                'date_ru': conference_obj.date_ru,
                'desc_en': conference_obj.desc_en,
                'desc_ru': conference_obj.desc_ru}
-    doc = DocxTemplate(doctpl_filename)
+               
+    doc = DocxTemplate(default_storage.open(doctpl_filename))
     doc.render(context)
-    tmp_doc = 'generated_doc_tmp.docx'
-    doc.save(tmp_doc)
+    tmp_doc = default_storage.open('generated_doc_tmp.docx', 'w')
+    doc.save(str(tmp_doc))
 
-    document = Document(tmp_doc)
+    gen_tmp = default_storage.open(str(tmp_doc))
+    document = Document(str(gen_tmp))
     styles = document.styles
 
     tracks = get_list_of_tracks(list_abstracts)
@@ -196,7 +200,7 @@ def generate_book(conference_obj, list_abstracts, doctpl_filename, finaldocument
 
             document.add_page_break()
 
-    document.save(finaldocument_filename)
+    findoc = default_storage.open('book_of_abstracts.docx', 'w')
+    document.save(str(findoc))
     print("=======================================================")
-    print("The document has been successfully generated to the path: " + path.normpath(
-        finaldocument_filename) + ".")
+    print("The document has been successfully generated to the path: " + path.normpath(str(findoc)) + ".")

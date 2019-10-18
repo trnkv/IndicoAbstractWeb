@@ -23,6 +23,7 @@ from app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^index/$', views.index, name='main'),
-    url(r'^index/upload_file/$', views.upload_file, name='upload_file')
+    url(r'^$', views.index, name='main'),
+    url(r'^/upload_file/$', views.upload_file, name='upload_file'),
+    url(r'^download_file/$', views.download_file, name='download_file'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + staticfiles_urlpatterns()
