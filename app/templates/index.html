@@ -1,23 +1,37 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<form  action={% url 'upload_file' %} method="post" name="uploader" enctype="multipart/form-data">
+<form  action={% url 'send_files_to_server' %} method="post" name="uploader" enctype="multipart/form-data">
 	{% csrf_token %}
     <div class="input-group mb-3">
-        <input id="file" type="file" name="conference" class="form-control" placeholder="Upload an Conference XML" aria-describedby="basic-addon2">
-        <input id="file" type="file" name="abstracts" class="form-control" placeholder="Upload an Abstracts XML" aria-describedby="basic-addon2">
-        <input id="file" type="file" name="template" class="form-control" placeholder="Upload a Template DOCX" aria-describedby="basic-addon2">
-        <input id="file" type="file" name="csv" class="form-control" placeholder="Upload a Matches CSV" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-            <input class="btn btn-outline-secondary" type="submit" value="Generate book">
-        </div>
+        <label class="input-group-text" for="inputGroupFile01">Conference XML</label>
+        <input id="conf_xml" type="file" name="conference" class="form-control" aria-label="Upload an Conference XML" aria-describedby="basic-addon2">
+    </div>
+
+    <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupFile01">Abstracts XML</label>
+        <input id="ab_xml" type="file" name="abstracts" class="form-control" placeholder="Upload an Abstracts XML" aria-describedby="basic-addon2">
+    </div>
+
+    <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupFile01">Template DOCX</label>
+        <input id="tpl_docx" type="file" name="template" class="form-control" placeholder="Upload a Template DOCX" aria-describedby="basic-addon2">
+    </div>
+    
+    <div id="csv_div" class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupFile01">Matches CSV</label>
+        <input id="matches_csv" type="file" name="csv" class="form-control" placeholder="Upload a Matches CSV" aria-describedby="basic-addon2">
+    </div>
+
+    <div class="input-group-append">
+        <input id="btn_submit" class="btn btn-outline-secondary" type="submit" value="Generate book">
     </div>
 </form>
 
 <img id="img" src="https://www.mrplan.es/experiencias/images/loading_23.gif">
 
 <script>
-    $('.btn').on('click', function() {
+    $('#btn_submit').on('click', function() {
         $('#img').css("display", "block");
     })
 </script>

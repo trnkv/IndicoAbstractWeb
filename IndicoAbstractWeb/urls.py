@@ -24,6 +24,8 @@ from app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^$', views.index, name='main'),
-    url(r'^/upload_file/$', views.upload_file, name='upload_file'),
+    url(r'^/send_files_to_server/$', views.send_files_to_server, name='send_files_to_server'),
+    url(r'^show_csv', views.show_csv, name="show_csv"),
+    url(r'^/save_csv/$', views.save_csv, name="save_csv"),
     url(r'^download_file/$', views.download_file, name='download_file'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + staticfiles_urlpatterns()
