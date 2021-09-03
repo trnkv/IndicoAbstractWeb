@@ -1,0 +1,3 @@
+lxml
+Django==2.2.3
+docxtpl
