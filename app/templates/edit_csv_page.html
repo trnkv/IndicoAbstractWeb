@@ -1,0 +1,115 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<table id="tblAppendGrid" class="table"></table>
+<button id="btn_save_csv" type="button" class="btn btn-primary">Save CSV</button>
+
+<div class="scroll_panel">  <!-- кнопки "Наверх" и "Вниз" -->
+  <a href="#" id="scroll_top"><span>↑ Top</span></a>
+  <a href="#" id="scroll_bottom"><span>↓ Down</span></a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery.appendgrid@2/dist/AppendGrid.js"></script>
+
+<script>
+  var matches_dict = null;
+  var myAppendGrid = null;
+  window.addEventListener('load', function() {
+        $.ajax ({
+                url: "{% url 'show_csv' %}",
+                type: "get",
+                success: function(data) {
+                  matches_dict = data["matches_dict"];
+                  myAppendGrid = new AppendGrid({
+                    element: "tblAppendGrid",
+                    uiFramework: "bootstrap4",
+                    iconFramework: "fontawesome5",
+                    columns: [
+                      {
+                        name: "old_aff",
+                        display: "Old Affiliation"
+                      },
+                      {
+                        name: "new_aff",
+                        display: "New Affiliation"
+                      },
+                    ]
+                  });
+
+                  for (key in matches_dict)
+                  {
+                    myAppendGrid.insertRow([
+                        { old_aff: key, new_aff: matches_dict[key] }
+                    ]);
+                  }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(xhr.responseText);
+                    console.log(thrownError);
+                }
+            })
+
+        $('#btn_save_csv').on('click', function() {
+          if (window.confirm('Do you want to save the changes?'))
+          {
+              // вешаем прелодер
+              $('.preloader').css("display", "inline-block");
+
+              // Get all data as array
+              var all_data = myAppendGrid.getAllValue();
+
+              $.ajax ({
+                url: "{% url 'save_csv' %}",
+                type: "post",
+                data:{
+                  all_data,
+                  csrfmiddlewaretoken: getCookie('csrftoken'),
+                },
+                success: function(data) {
+                  document.body.innerHTML = '';
+                  document.write(data);
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(xhr.responseText);
+                    console.log(thrownError);
+                }
+              })
+          }
+        })
+
+        function getCookie(name){
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+  })
+</script>
+
+<script type="text/javascript">  // кнопки "Наверх" и "Вниз"
+  $(function(){
+      $('#scroll_top').click(function(){
+          $('html, body').animate({scrollTop: 0}, 600);
+          return false;
+      });
+      
+      $('#scroll_bottom').click(function(){
+          $('html, body').animate({scrollTop: $(document).height() - $(window).height()}, 600);
+          return false;
+      });
+  });
+</script>
+
+{% endblock %}

@@ -1,17 +1,19 @@
-import os
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
-from shutil import copyfile
 import csv
+import os
 #from .forms import UploadFileForm
 #from .models import XML, DOCX, CSV
 
 from .static.conference import parse_conference_xml
 from .static.abstracts import parse_abstracts_xml, check_abstracts_consistency, check_abstract_count_words
 from .static.generator import generate_book
+
+from pprint import pprint
+
 
 MEDIA_ROOT = settings.MEDIA_ROOT
 CSV_PATH = MEDIA_ROOT + "/matches.csv"
@@ -55,16 +57,31 @@ def show_csv(request):
     # return render(request, 'edit_csv_page.html', {'matches_dict': matches_dict})
 
 def save_csv(request):
-    '''TODO: подправить сохранение в csv (прилетает QueryDict)'''
     """получает данные из таблицы (edit_csv_page.html), перезаписывает их в CSV"""
     if request.method == 'POST':
-        changed_csv = request.POST
+        changed_csv = dict(request.POST.lists())  # QueryDict -> dict
         print(changed_csv)
 
+        filtered_changed_csv = {'old_affiliation':[], 'new_affiliation':[]}
+
+        for i in range(len(changed_csv)//2):
+            filtered_changed_csv['old_affiliation'].append(changed_csv[f"all_data[{i}][old_aff]"])
+            filtered_changed_csv['new_affiliation'].append(changed_csv[f"all_data[{i}][new_aff]"])
+        
+        pprint(filtered_changed_csv)
+
         with open(CSV_PATH, 'w') as f:
-            w = csv.DictWriter(f, changed_csv.keys())
-            w.writeheader()
-            w.writerow(changed_csv)
+            keys = ':'.join(str(key) for key in filtered_changed_csv.keys())
+            f.write(keys + "\n")
+
+            for i in range(len(filtered_changed_csv['old_affiliation'])):
+                f.write(
+                    str(filtered_changed_csv['old_affiliation'][i][0]) + 
+                    ":" +
+                    str(filtered_changed_csv['new_affiliation'][i][0] + "\n")
+                )
+    status_string, book = process()
+    return render(request, 'uploaded.html', {'status': status_string, 'book': book})
 
 
 def process():
@@ -95,14 +112,18 @@ def process():
 
     template_file.close()
 
-    # удаляем все временные файлы  с сервера для экономии места
-    default_storage.delete('conference.xml')
-    default_storage.delete('abstracts.xml')
-    default_storage.delete('tpl.docx')
-    default_storage.delete('matches.csv')
-    default_storage.delete('generated_doc_tmp.docx')
+    # удаляем все временные файлы  с сервера для экономии места, оставляем только "book_of_abstracts.docx"
+    # default_storage.delete('conference.xml')
+    # default_storage.delete('abstracts.xml')
+    # default_storage.delete('tpl.docx')
+    # default_storage.delete('matches.csv')
+    # default_storage.delete('generated_doc_tmp.docx')    
+    for file in os.listdir(default_storage.location):
+        if file != "book_of_abstracts.docx":
+            default_storage.delete(file)
+    
+    return status_string, default_storage.open('book_of_abstracts.docx', 'r')
 
-    return render(request, 'uploaded.html', {'status':status_string,'book':default_storage.open('book_of_abstracts.docx', 'r')})
     #except:
         #return render(request, 'error.html', {'error':"Something gone wrong. You may have mistaken the files."})
         #return JsonResponse({'res':""})

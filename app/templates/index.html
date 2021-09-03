@@ -4,22 +4,22 @@
 <form  action={% url 'send_files_to_server' %} method="post" name="uploader" enctype="multipart/form-data">
 	{% csrf_token %}
     <div class="input-group mb-3">
-        <label class="input-group-text" for="inputGroupFile01">Conference XML</label>
+        <label class="input-group-text" for="conf_xml">Conference XML</label>
         <input id="conf_xml" type="file" name="conference" class="form-control" aria-label="Upload an Conference XML" aria-describedby="basic-addon2">
     </div>
 
     <div class="input-group mb-3">
-        <label class="input-group-text" for="inputGroupFile01">Abstracts XML</label>
+        <label class="input-group-text" for="ab_xml">Abstracts XML</label>
         <input id="ab_xml" type="file" name="abstracts" class="form-control" placeholder="Upload an Abstracts XML" aria-describedby="basic-addon2">
     </div>
 
     <div class="input-group mb-3">
-        <label class="input-group-text" for="inputGroupFile01">Template DOCX</label>
+        <label class="input-group-text" for="tpl_docx">Template DOCX</label>
         <input id="tpl_docx" type="file" name="template" class="form-control" placeholder="Upload a Template DOCX" aria-describedby="basic-addon2">
     </div>
     
     <div id="csv_div" class="input-group mb-3">
-        <label class="input-group-text" for="inputGroupFile01">Matches CSV</label>
+        <label class="input-group-text" for="matches_csv">Matches CSV</label>
         <input id="matches_csv" type="file" name="csv" class="form-control" placeholder="Upload a Matches CSV" aria-describedby="basic-addon2">
     </div>
 
@@ -28,20 +28,11 @@
     </div>
 </form>
 
-<img id="img" src="https://www.mrplan.es/experiencias/images/loading_23.gif">
 
 <script>
     $('#btn_submit').on('click', function() {
-        $('#img').css("display", "block");
+        $('.preloader').css("display", "inline-block");
     })
 </script>
-
-<style type="text/css">
-    img {
-        height: 100px;
-        width: 180px;
-        display: none;
-    }
-</style>
 
 {% endblock %}

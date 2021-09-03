@@ -27,5 +27,6 @@ urlpatterns = [
     url(r'^/send_files_to_server/$', views.send_files_to_server, name='send_files_to_server'),
     url(r'^show_csv', views.show_csv, name="show_csv"),
     url(r'^/save_csv/$', views.save_csv, name="save_csv"),
+    # url(r'^/process/$', views.process, name="process"),
     url(r'^download_file/$', views.download_file, name='download_file'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + staticfiles_urlpatterns()
